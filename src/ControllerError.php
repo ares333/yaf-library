@@ -1,5 +1,5 @@
 <?php
-namespace Ares333\Yaf\Tool;
+namespace Ares333\Yaf;
 
 use Yaf\Controller_Abstract;
 use Yaf\Exception\LoadFailed\Action;
@@ -10,7 +10,7 @@ use Ares333\Yaf\Helper\Error;
 class ControllerError extends Controller_Abstract
 {
 
-    function errorAction(\Throwable $exception)
+    function errorAction($exception)
     {
         if ($this->is404($exception)) {
             return $this->error404Action();
@@ -18,6 +18,7 @@ class ControllerError extends Controller_Abstract
             $this->error500Action();
             Error::catchException($exception);
         }
+        return null;
     }
 
     function error500Action()
@@ -63,7 +64,7 @@ class ControllerError extends Controller_Abstract
     /**
      * is 404
      *
-     * @param \Throwable $exception
+     * @param $exception
      * @return boolean
      */
     protected function is404($exception)

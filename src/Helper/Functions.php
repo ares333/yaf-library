@@ -1,6 +1,6 @@
 <?php
-namespace Ares333\Yaf\Helper
-{
+
+namespace Ares333\Yaf\Helper {
 
     /**
      * execute `new Functions()` to load functions into root namespace
@@ -32,24 +32,24 @@ namespace Ares333\Yaf\Helper
 
         protected static function tag()
         {
-            static $taged = false;
-            if (! $taged) {
+            static $tagged = false;
+            if (!$tagged) {
                 if (PHP_SAPI == 'fpm-fcgi') {
                     echo '<pre>';
                 }
-                $taged = true;
+                $tagged = true;
             }
         }
 
         static function arrayDict(array $list, $columns = null, $primary = null, $group = null)
         {
-            if (! isset($columns)) {
+            if (!isset($columns)) {
                 $columns = array();
             }
-            if (! isset($primary)) {
+            if (!isset($primary)) {
                 $primary = array();
             }
-            if (! isset($group)) {
+            if (!isset($group)) {
                 $group = array();
             }
             if (is_scalar($columns)) {
@@ -162,15 +162,14 @@ namespace Ares333\Yaf\Helper
         }
     }
 }
-namespace 
-{
+
+namespace {
 
     use Ares333\Yaf\Helper\Functions;
-    if (! function_exists('printr')) {
+
+    if (!function_exists('printr')) {
 
         /**
-         *
-         * @param mixed ...$args
          *
          * @return mixed
          */
@@ -180,11 +179,9 @@ namespace
         }
     }
 
-    if (! function_exists('vardump')) {
+    if (!function_exists('vardump')) {
 
         /**
-         *
-         * @param mixed ...$args
          *
          * @return mixed
          */
@@ -194,7 +191,7 @@ namespace
         }
     }
 
-    if (! function_exists('array_dict')) {
+    if (!function_exists('array_dict')) {
 
         /**
          *

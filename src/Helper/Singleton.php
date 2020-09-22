@@ -1,5 +1,9 @@
 <?php
+
 namespace Ares333\Yaf\Helper;
+
+use ReflectionClass;
+use ReflectionException;
 
 class Singleton
 {
@@ -11,16 +15,17 @@ class Singleton
      * @param string|callable $name
      * @param array $args
      * @return mixed
+     * @throws ReflectionException
      */
     static function getInstance($name, ...$args)
     {
         $key = static::generateKey($name);
         $subKey = static::generateKey($args);
-        if (! isset(static::$instances[$key][$subKey])) {
+        if (!isset(static::$instances[$key][$subKey])) {
             if (is_callable($name)) {
                 $object = call_user_func_array($name, $args);
             } else {
-                $reflection = new \ReflectionClass($name);
+                $reflection = new ReflectionClass($name);
                 $object = $reflection->newInstanceWithoutConstructor();
                 $method = $reflection->getConstructor();
                 if (isset($method)) {
@@ -28,7 +33,7 @@ class Singleton
                     $method->invokeArgs($object, $args);
                 }
             }
-            if (! isset(static::$instances[$key])) {
+            if (!isset(static::$instances[$key])) {
                 static::$instances[$key] = [];
             }
             static::$instances[$key][$subKey] = $object;
@@ -39,10 +44,10 @@ class Singleton
     static function getInstances($name = null)
     {
         $key = static::generateKey($name);
-        if (! isset($key)) {
+        if (!isset($key)) {
             return static::$instances;
         }
-        if (! isset(static::$instances[$key])) {
+        if (!isset(static::$instances[$key])) {
             return [];
         }
         return static::$instances[$key];
@@ -67,7 +72,7 @@ class Singleton
             } elseif (is_object($var)) {
                 return spl_object_hash($var);
             } else {
-                return (string) $var;
+                return (string)$var;
             }
         };
         return md5($functionStringValue($args));

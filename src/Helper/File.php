@@ -1,4 +1,5 @@
 <?php
+
 namespace Ares333\Yaf\Helper;
 
 class File
@@ -8,17 +9,17 @@ class File
      * remove dir recursively
      *
      * @param string $dir
-     *            absolute path is highly recommanded
-     *            
+     *            absolute path is highly recommended
+     *
      * @return boolean
      */
     static function rmdir($dir)
     {
         clearstatcache();
-        if (! is_dir($dir)) {
+        if (!is_dir($dir)) {
             return false;
         }
-        // glob has someproblems with dot started filename,so use scandir
+        // glob has some problems with dot started filename,so use scandir
         $files = scandir($dir);
         foreach ($files as $k => $v) {
             if ($v == '.' || $v == '..') {
@@ -27,7 +28,7 @@ class File
                 $files[$k] = $dir . DIRECTORY_SEPARATOR . $v;
             }
         }
-        while (! empty($files)) {
+        while (!empty($files)) {
             $file = array_pop($files);
             if (is_file($file)) {
                 unlink($file);
@@ -65,7 +66,7 @@ class File
             return 0 === strpos($path, '/');
         } elseif (0 === strpos(PHP_OS, 'WIN')) {
             $path = strtolower($path);
-            return (bool) preg_match('/[a-z]+:(\/|\\\\)/i', $path);
+            return (bool)preg_match('/[a-z]+:(\/|\\{2})/i', $path);
         } else {
             user_error('Unknown OS', E_USER_ERROR);
         }
@@ -82,28 +83,28 @@ class File
      */
     static function tail($file, $n = null)
     {
-        if (! isset($n)) {
+        if (!isset($n)) {
             $n = 8;
         }
-        if (! $fp = fopen($file, 'r')) {
+        if (!$fp = fopen($file, 'r')) {
             user_error('failed open file, file=' . $file, E_USER_WARNING);
             return null;
         }
-        $pos = - 2;
+        $pos = -2;
         $eof = "";
         $str = "";
         while ($n > 0) {
             while ($eof != "\n") {
-                if (! fseek($fp, $pos, SEEK_END)) {
+                if (!fseek($fp, $pos, SEEK_END)) {
                     $eof = fgetc($fp);
-                    $pos --;
+                    $pos--;
                 } else {
                     break;
                 }
             }
             $str .= fgets($fp);
             $eof = "";
-            $n --;
+            $n--;
         }
         return $str;
     }
@@ -127,7 +128,7 @@ class File
             user_error('Open file failed, file=' . $lockFile, E_USER_ERROR);
         }
         $lock = LOCK_EX;
-        if (! $block) {
+        if (!$block) {
             $lock |= LOCK_NB;
         }
         if (flock($f, $lock)) {
@@ -156,9 +157,9 @@ class File
         if (is_dir($dir)) {
             $dirs = static::scandir($dir, 'dir', 1, $ignore);
             foreach ($dirs as $v) {
-                $depth ++;
+                $depth++;
                 $res[$v] = call_user_func(__METHOD__, $dir . '/' . $v, $maxDepth, $ignore);
-                $depth --;
+                $depth--;
             }
             $res = array_merge($res, static::scandir($dir, 'file', 1, $ignore));
         }
@@ -166,7 +167,7 @@ class File
     }
 
     /**
-     * scan dir recersively
+     * scan dir recursively
      *
      * @param string $dir
      * @param string $mode
@@ -181,16 +182,16 @@ class File
      *            asc
      *            desc
      * @param resource $context
-     *            see php menual on scandir
-     *            
+     *            see php manual on scandir
+     *
      * @return array|null
      */
     static function scandir($dir, $mode = null, $depth = null, $ignore = null, $order = null, $context = null)
     {
-        if (! isset($mode)) {
+        if (!isset($mode)) {
             $mode = 'all';
         }
-        if (! isset($order)) {
+        if (!isset($order)) {
             $order = 'asc';
         }
         static $modes = array(
@@ -199,15 +200,15 @@ class File
             'all'
         );
         $r = array();
-        if (! in_array($mode, $modes)) {
+        if (!in_array($mode, $modes)) {
             user_error('mode is invalid', E_USER_WARNING);
             return null;
         }
-        if (is_numeric($depth) && -- $depth < 0) {
+        if (is_numeric($depth) && --$depth < 0) {
             return $r;
         }
         $dir = rtrim($dir, '/');
-        if (! is_dir($dir)) {
+        if (!is_dir($dir)) {
             return $r;
         }
         if ($order == 'asc') {
@@ -223,12 +224,12 @@ class File
         } else {
             $list = scandir($dir, $orderInt);
         }
-        if (is_array($list) and ! empty($list)) {
+        if (is_array($list) and !empty($list)) {
             foreach ($list as $v) {
                 if ($v == '.' || $v == '..') {
                     continue;
                 } else {
-                    if (! empty($ignore)) {
+                    if (!empty($ignore)) {
                         if (is_string($ignore)) {
                             $ignore = array(
                                 $ignore
@@ -247,7 +248,7 @@ class File
                             $r[] = $v;
                         }
                         $t = static::scandir($dir . '/' . $v, $mode, $depth, $ignore, $order, $context);
-                        if (! empty($t)) {
+                        if (!empty($t)) {
                             foreach ($t as $k1 => $v1) {
                                 $t[$k1] = $v . '/' . $v1;
                             }

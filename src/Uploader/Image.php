@@ -1,8 +1,14 @@
 <?php
-namespace Ares333\Yaf\Tool\Uploader;
+
+namespace Ares333\Yaf\Uploader;
 
 use Ares333\Yaf\Helper\Http;
+use DOMDocument;
 use Gumlet\ImageResize;
+use Gumlet\ImageResizeException;
+use Imagick;
+use ImagickException;
+use stdClass;
 
 /**
  * CREATE TABLE `image` (
@@ -25,7 +31,7 @@ class Image extends File
 
     protected $htmlImagePrefix = 'img';
 
-    protected $htmlTemplate = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"></head><body>{$body}</body></html>';
+    protected $htmlTemplate = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Image Uploader</title></head><body>{$body}</body></html>';
 
     /**
      * Image constructor.
@@ -72,23 +78,25 @@ class Image extends File
      *
      * {@inheritdoc}
      *
-     * @see \Ares333\Yaf\Tool\Uploader\File::doUpload()
+     * @throws ImageResizeException
+     * @throws ImagickException
+     * @see \Ares333\Yaf\Uploader\File::doUpload()
      */
     protected function doUpload($content, $cbWrite, $ext)
     {
         if (strtolower($ext) == 'svg') {
-            $imagesize = [
+            $imageSize = [
                 0,
                 0
             ];
         } else {
             if ($content['type'] === 'file') {
-                $imagesize = getimagesize($content['value']);
+                $imageSize = getimagesize($content['value']);
             } else {
-                $imagesize = getimagesizefromstring($content['value']);
+                $imageSize = getimagesizefromstring($content['value']);
             }
         }
-        if (false === $imagesize) {
+        if (false === $imageSize) {
             return $this->getRes(null, self::ERR_IMAGE_INVALID);
         }
         $funcContentTrans = function ($content) {
@@ -99,12 +107,12 @@ class Image extends File
             return $content;
         };
         if (isset($this->resize) && in_array(strtolower($ext), [
-            'gif',
-            'jpg',
-            'jpeg',
-            'png',
-            'webp'
-        ])) {
+                'gif',
+                'jpg',
+                'jpeg',
+                'png',
+                'webp'
+            ])) {
             $content = $funcContentTrans($content);
             $resize = ImageResize::createFromString($content['value']);
             if ($this->resize['ratio']) {
@@ -116,7 +124,7 @@ class Image extends File
         }
         if (isset($this->compress)) {
             $content = $funcContentTrans($content);
-            $imagick = new \Imagick();
+            $imagick = new Imagick();
             $imagick->readimageblob($content['value']);
             $imagick->setImageCompressionQuality($this->compress);
             $content['value'] = $imagick->getImageBlob();
@@ -126,10 +134,10 @@ class Image extends File
             return $res;
         }
         $rowFile = $res['value'];
-        $rowImage = new \stdClass();
+        $rowImage = new stdClass();
         $rowImage->id = $rowFile->id;
-        $rowImage->width = $imagesize[0];
-        $rowImage->height = $imagesize[1];
+        $rowImage->width = $imageSize[0];
+        $rowImage->height = $imageSize[1];
         $pdo = $this->getPdo();
         // update width,height
         $pdo->prepare('insert into ' . $this->tableImage . ' values(?,?,?) on duplicate key update width=?,height=?')->execute(
@@ -169,20 +177,20 @@ class Image extends File
      * @param string $html
      * @param bool $isFragment
      *
-     * @return string
+     * @return string|null
      */
     function htmlDecode($html, $isFragment = true)
     {
-        if (! isset($this->url)) {
+        if (!isset($this->url)) {
             user_error('Html decode failed because prefix url not set', E_USER_ERROR);
         }
-        if (! isset($html)) {
-            return;
+        if (!isset($html)) {
+            return null;
         }
         if ($isFragment) {
             $html = str_replace('{$body}', $html, $this->htmlTemplate);
         }
-        $domDoc = new \DOMDocument();
+        $domDoc = new DOMDocument();
         $domDoc->loadHTML($html);
         $domImgList = $domDoc->getElementsByTagName('img');
         $map = [];

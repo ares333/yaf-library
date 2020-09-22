@@ -1,5 +1,6 @@
 <?php
-namespace Ares333\Yaf\Tool;
+
+namespace Ares333\Yaf;
 
 /**
  * php.ini
@@ -33,7 +34,7 @@ class XHProf
      */
     function __construct($path, $domain, $auto = null)
     {
-        if (! isset($auto)) {
+        if (!isset($auto)) {
             $auto = false;
         }
         $this->path = $path;
@@ -63,13 +64,14 @@ class XHProf
 
     protected function call($name)
     {
-        if (! $this->extensionLoaded()) {
-            return;
+        if (!$this->extensionLoaded()) {
+            return null;
         }
         $args = array();
         if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
             $functionPre = 'tideways';
             if ($name === 'enable') {
+                /** @noinspection PhpUndefinedConstantInspection */
                 $args[] = TIDEWAYS_FLAGS_NO_SPANS;
             }
         } else {
@@ -88,18 +90,20 @@ class XHProf
 
     function run()
     {
-        if (! $this->extensionLoaded()) {
-            return;
+        if (!$this->extensionLoaded()) {
+            return null;
         }
         $xhprofData = $this->call('disable');
+        /** @noinspection PhpIncludeInspection */
         include_once $this->path . "/xhprof_lib/utils/xhprof_lib.php";
+        /** @noinspection PhpIncludeInspection */
         include_once $this->path . "/xhprof_lib/utils/xhprof_runs.php";
         $name = 'XHProfRuns_Default';
         $outputDir = $this->path . '/run';
         $xhprofRuns = new $name($outputDir);
         $type = dechex(crc32($this->path));
+        /** @noinspection PhpUndefinedMethodInspection */
         $run_id = $xhprofRuns->save_run($xhprofData, $type);
-        $url = "http://{$this->domain}/index.php?run={$run_id}&source={$type}";
-        return $url;
+        return "http://{$this->domain}/index.php?run={$run_id}&source={$type}";
     }
 }

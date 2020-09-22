@@ -1,5 +1,5 @@
 <?php
-namespace Ares333\Yaf\Tool;
+namespace Ares333\Yaf;
 
 use Ares333\Yaf\Helper\Singleton as Base;
 

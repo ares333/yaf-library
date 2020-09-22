@@ -64,6 +64,7 @@ class Http
 
     /**
      *
+     * @param string|null $url
      * @return string|null
      */
     static function getOriginUrl($url = null)
@@ -72,7 +73,7 @@ class Http
             $url = static::getCurrentUrl();
         }
         if (! isset($url)) {
-            return;
+            return null;
         }
         $urlArr = parse_url($url);
         $url = array(
@@ -92,7 +93,7 @@ class Http
     static function getCurrentUrl()
     {
         if (PHP_SAPI == 'cli') {
-            return;
+            return null;
         }
         $parse = [];
         $server = $_SERVER;

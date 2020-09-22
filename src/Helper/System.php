@@ -11,6 +11,7 @@ class System
      *            main process code to be executed
      * @param callable $callbackSub
      *            in sub process code to be executed
+     * @param integer|null $num
      */
     static function fork($callback, $callbackSub, $num = null)
     {
@@ -32,6 +33,7 @@ class System
                         call_user_func($callback, $pidList);
                     }
                     foreach ($pidList as $v) {
+                        /** @noinspection PhpParamsInspection */
                         pcntl_waitpid($v);
                     }
                 }

@@ -1,20 +1,24 @@
 <?php
 namespace Ares333\Yaf\Helper;
 
+use ErrorException;
+use Exception;
+
 class Error
 {
 
     /**
      * error to exception
+     * @throws ErrorException
      */
     static function error2exception()
     {
         set_error_handler(
-            function ($errno, $errstr, $errfile, $errline) {
+            function ($errno, $errorString, $errorFile, $errorLine) {
                 $r = error_reporting();
                 if ($r & $errno) {
-                    $exception = new \ErrorException($errstr, null, $errno,
-                        $errfile, $errline);
+                    $exception = new ErrorException($errorString, null, $errno,
+                        $errorFile, $errorLine);
                     if ($errno == E_USER_ERROR || $errno == E_RECOVERABLE_ERROR) {
                         throw $exception;
                     }
@@ -50,7 +54,7 @@ class Error
     /**
      * Deal with exception
      *
-     * @param \Exception $exception
+     * @param Exception $exception
      * @param bool $return
      *
      * @return string|null
@@ -61,7 +65,7 @@ class Error
             $return = false;
         }
         $str = '';
-        if ($exception instanceof \ErrorException) {
+        if ($exception instanceof ErrorException) {
             $str .= static::severity2string($exception->getSeverity()) . ': ';
         }
         $str .= $exception->__toString();

@@ -1,6 +1,8 @@
 <?php
-namespace Ares333\Yaf\Tool;
+namespace Ares333\Yaf;
 
+use Smarty;
+use SmartyException;
 use Yaf\View_Interface;
 
 class SmartyView implements View_Interface
@@ -10,7 +12,7 @@ class SmartyView implements View_Interface
 
     /**
      *
-     * @param \Smarty $smarty
+     * @param Smarty $smarty
      */
     function __construct($smarty)
     {
@@ -19,7 +21,7 @@ class SmartyView implements View_Interface
 
     /**
      *
-     * @return \Smarty
+     * @return Smarty
      */
     function getSmarty()
     {
@@ -28,7 +30,7 @@ class SmartyView implements View_Interface
 
     /**
      *
-     * @param \Smarty $smarty
+     * @param Smarty $smarty
      */
     function setSmarty($smarty)
     {
@@ -72,6 +74,7 @@ class SmartyView implements View_Interface
     /**
      *
      * {@inheritdoc}
+     * @throws SmartyException
      * @see \Yaf\View_Interface::render()
      */
     public function render($name, $value = NULL)
@@ -85,6 +88,7 @@ class SmartyView implements View_Interface
     /**
      *
      * {@inheritdoc}
+     * @throws SmartyException
      * @see \Yaf\View_Interface::display()
      */
     public function display($name, $value = NULL)
