@@ -3,6 +3,7 @@
   "require": {
     "php": ">=5.6"
   },
+  "license": "GPL-3.0",
   "require-dev": {
     "hoa/mime": "3.17.01.10",
     "gumlet/php-image-resize": "^2.0",
